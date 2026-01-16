@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed | Master Calisthenics India</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .thank-you-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            background: url('assets/hero_bg.png') no-repeat center center/cover;
+            position: relative;
+        }
+
+        .thank-you-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 17, 23, 0.9);
+            z-index: 1;
+        }
+
+        .thank-you-content {
+            position: relative;
+            z-index: 2;
+            background: var(--card-bg);
+            padding: 50px 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            max-width: 600px;
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.6);
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: #4CAF50;
+            /* Green for success */
+            margin-bottom: 20px;
+        }
+
+        .thank-you-content h1 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+        }
+
+        .thank-you-content p {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .reminder-box {
+            background: rgba(245, 124, 0, 0.1);
+            border: 1px solid var(--accent);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .reminder-box p {
+            color: #fff;
+            margin-bottom: 0;
+            font-size: 1rem;
+        }
+
+        .whatsapp-number {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: block;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="thank-you-section">
+        <div class="thank-you-overlay"></div>
+        <div class="thank-you-content">
+            <div class="success-icon">✓</div>
+            <h1>Booking Successful!</h1>
+            <p>Thanks for signing up. We're excited to see you at the arena.</p>
+
+            <div class="reminder-box">
+                <p>
+                    You will receive a confirmation & reminder message on <strong>WhatsApp</strong> from our official
+                    number:
+                    <span class="whatsapp-number">+91 84335 99778</span>
+                </p>
+                <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">Please save this number to ensure you
+                    don't miss any updates.</p>
+            </div>
+
+            <a href="index.html" class="btn btn-primary">Back to Home</a>
+        </div>
+    </section>
+
+</body>
+
+</html>
