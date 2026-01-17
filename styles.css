@@ -141,6 +141,7 @@ h6 {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    z-index: 1002;
 }
 
 .nav-logo {
@@ -574,6 +575,10 @@ h6 {
     /* Short and Crisp Section Padding */
     .section {
         padding: 40px 0;
+    }
+
+    .nav-logo {
+        height: 60px;
     }
 
     .hero {
