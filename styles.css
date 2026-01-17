@@ -9,7 +9,7 @@
     --accent-glow: rgba(245, 124, 0, 0.4);
     --font-heading: 'Montserrat', sans-serif;
     --font-body: 'Inter', sans-serif;
-    --nav-height: 80px;
+    --nav-height: 100px;
     --transition: all 0.3s ease;
 }
 
@@ -127,19 +127,24 @@ h6 {
 
 .nav-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     height: 100%;
+    position: relative;
 }
 
 .logo-container {
     display: flex;
     align-items: center;
     text-decoration: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .nav-logo {
-    height: 60px;
+    height: 80px;
     /* Adjust as needed */
     width: auto;
     border-radius: 50%;
