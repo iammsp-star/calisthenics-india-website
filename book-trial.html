@@ -59,14 +59,7 @@
                         Please select your preferred time slot below.</p>
                 </div>
 
-                <form action="https://formsubmit.co/mastercalisthenics25@gmail.com" method="POST" class="contact-form">
-                    <!-- FormSubmit Configuration -->
-                    <input type="hidden" name="_subject" value="New Free Trial Booking!">
-                    <input type="hidden" name="_template" value="table">
-                    <input type="hidden" name="_captcha" value="false">
-                    <input type="hidden" name="_next" value="https://mastercalisthenicsindia.com/thank-you.html">
-                    <!-- Placeholder, can be removed or creating a thank you page later -->
-
+                <form id="bookingForm" class="contact-form">
                     <div class="form-group">
                         <label for="name">Full Name</label>
                         <input type="text" id="name" name="name" class="form-input" required
@@ -78,8 +71,6 @@
                         <input type="tel" id="phone" name="whatsapp_number" class="form-input" required
                             placeholder="Enter your WhatsApp number">
                     </div>
-
-
 
                     <div class="form-group">
                         <label>Preferred Session Time</label>
@@ -103,7 +94,7 @@
                     </div>
 
                     <div class="form-actions text-center">
-                        <button type="submit" class="btn btn-primary btn-block">Book My Free Trial</button>
+                        <button type="submit" class="btn btn-primary btn-block">Book & Send on WhatsApp</button>
                     </div>
                 </form>
             </div>
@@ -144,6 +135,33 @@
         const dateInput = document.getElementById('date');
         const today = new Date().toISOString().split('T')[0];
         dateInput.min = today;
+
+        // WhatsApp Booking Logic
+        document.getElementById('bookingForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const date = document.getElementById('date').value;
+            const session = document.querySelector('input[name="session_time"]:checked').value;
+
+            // Construct Message
+            const message = `*New Free Trial Booking* 
+Hey Team MCI, I would like to book a free trial session.
+
+Name: ${name}
+Phone: ${phone}
+Date: ${date}
+Session: ${session}
+
+Please confirm my slot.`;
+
+            // Encode and Redirect
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/918779075353?text=${encodedMessage}`;
+
+            window.location.href = whatsappUrl;
+        });
     </script>
 </body>
 
