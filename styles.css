@@ -527,7 +527,6 @@ h6 {
         transition: 0.5s;
         border-left: 1px solid rgba(255, 255, 255, 0.1);
         padding-top: 60px;
-        /* Space for close button if needed, but hamburger handles it */
     }
 
     .nav-links.active {
@@ -559,16 +558,26 @@ h6 {
     /* Mobile Text & Spacing Adjustments */
     .hero h1 {
         font-size: 2.2rem;
+        margin-bottom: 1rem;
     }
 
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Short and Crisp Section Padding */
     .section {
-        padding: 60px 0;
-        /* Reduced from 100px for mobile */
+        padding: 40px 0;
+    }
+
+    .hero {
+        /* Adjust hero height if needed, but 100vh is usually good. 
+           Maybe reduce if address bar issues, but sticking to 100vh for now */
     }
 
     .container {
-        padding: 0 15px;
-        /* Slightly more width for content */
+        padding: 0 20px;
     }
 
     .section-header h2 {
@@ -576,16 +585,65 @@ h6 {
     }
 
     .section-header {
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .features-grid,
+    .programs-grid,
+    .philosophy-grid,
+    .footer-grid {
+        grid-template-columns: 1fr;
+        /* Force vertical stack */
+        gap: 20px;
+        margin-top: 30px;
     }
 
     .feature-card,
     .program-card {
-        margin-bottom: 20px;
+        margin-bottom: 0px;
+        /* Use grid gap instead */
+        padding: 25px 20px;
+    }
+
+    .banner {
+        padding: 40px 0;
     }
 
     .banner h2 {
         font-size: 1.5rem;
+    }
+
+    /* Stack buttons vertical on mobile */
+    .hero-btns {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .hero-btns .btn {
+        width: 100%;
+        max-width: 280px;
+        margin: 0 0 15px 0;
+        /* Stack margin */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 48px;
+        /* Touch friendly */
+    }
+
+    .btn {
+        min-height: 48px;
+        min-width: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Adjust Footer for Mobile */
+    .cta-section {
+        padding: 50px 0;
     }
 }
 

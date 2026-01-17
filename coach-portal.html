@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Portal | Master Calisthenics India</title>
+    <!-- Security Meta Tags -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; form-action 'self' https://formsubmit.co; img-src 'self' data: https:;">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+    <script src="coach-auth.js"></script>
+    <script>
+        // Check auth immediately
+        CoachAuth.requireAuth();
+    </script>
+
+    <style>
+        .portal-nav {
+            background: #1a1a1a;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .portal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .dash-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-big {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="portal-nav">
+        <div class="container portal-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="assets/logo.png" alt="MCI" height="40"
+                    style="border-radius: 50%; border: 1px solid var(--accent);">
+                <span style="font-weight: 700; font-size: 1.2rem;">Coach Portal</span>
+            </div>
+
+            <div class="user-badge">
+                <div style="text-align: right; display: none; margin-right: 10px;" id="welcome-text">
+                    <div style="font-size: 0.9rem; font-weight: 600;">Welcome, Coach</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">MCI Team</div>
+                </div>
+                <div class="avatar">C</div>
+                <button onclick="CoachAuth.logout()" class="btn btn-outline"
+                    style="padding: 8px 15px; font-size: 0.8rem; margin-left: 10px;">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="padding: 40px 20px;">
+        <h1 style="font-size: 2rem;">Dashboard Overview</h1>
+        <p style="color: var(--text-muted);">Welcome back to the internal management system.</p>
+
+        <div class="dashboard-grid">
+
+            <!-- Helper Card -->
+            <div class="dash-card">
+                <div class="dash-header">
+                    <h3>Quick Actions</h3>
+                    <span style="font-size: 1.5rem;">⚡</span>
+                </div>
+                <!-- Assuming the schedule Google Sheet would be linked here eventually -->
+                <a href="#" class="btn btn-primary btn-block" style="text-align: center; margin-bottom: 15px;">View
+                    Schedule Sheet</a>
+                <a href="#" class="btn btn-outline btn-block"
+                    style="text-align: center; border-color: rgba(255,255,255,0.2);">Log Daily Report</a>
+            </div>
+
+            <!-- Stats Card -->
+            <div class="dash-card">
+                <div class="dash-header">
+                    <h3>This Week</h3>
+                    <span style="font-size: 1.5rem;">📅</span>
+                </div>
+                <div style="display: flex; gap: 30px;">
+                    <div>
+                        <div class="stat-big">12</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Classes</div>
+                    </div>
+                    <div>
+                        <div class="stat-big">8</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">New Trials</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Resources -->
+            <div class="dash-card">
+                <div class="dash-header">
+                    <h3>Recent Resources</h3>
+                    <span style="font-size: 1.5rem;">📂</span>
+                </div>
+
+                <div class="list-item">
+                    <span>Beginner Progression Guide v2.pdf</span>
+                    <span style="color: var(--accent);">Download</span>
+                </div>
+                <div class="list-item">
+                    <span>Nutrition Guidelines.docx</span>
+                    <span style="color: var(--accent);">Download</span>
+                </div>
+                <div class="list-item">
+                    <span>MCI Brand Assets.zip</span>
+                    <span style="color: var(--accent);">Download</span>
+                </div>
+            </div>
+
+            <!-- Upcoming Trials Placeholder -->
+            <div class="dash-card" style="grid-column: 1 / -1;">
+                <div class="dash-header">
+                    <h3>Pending Trial Requests (Mock Data)</h3>
+                    <span style="font-size: 1.5rem;">📩</span>
+                </div>
+                <!-- In a real app, this would fetch from a database or Google Sheet API -->
+                <table style="width: 100%; border-collapse: collapse; color: var(--text-muted);">
+                    <thead>
+                        <tr style="text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <th style="padding: 10px;">Name</th>
+                            <th style="padding: 10px;">Date</th>
+                            <th style="padding: 10px;">Contact</th>
+                            <th style="padding: 10px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                            <td style="padding: 15px 10px; color: white;">Rahul Sharma</td>
+                            <td style="padding: 15px 10px;">Jan 20, 2026</td>
+                            <td style="padding: 15px 10px;">+91 98765 43210</td>
+                            <td style="padding: 15px 10px;"><span style="color: #4cd137;">Confirmed</span></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                            <td style="padding: 15px 10px; color: white;">Priya Patel</td>
+                            <td style="padding: 15px 10px;">Jan 22, 2026</td>
+                            <td style="padding: 15px 10px;">+91 98765 12345</td>
+                            <td style="padding: 15px 10px;"><span style="color: #fbc531;">Pending</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        if (window.innerWidth > 768) {
+            document.getElementById('welcome-text').style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
