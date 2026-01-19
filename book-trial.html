@@ -72,6 +72,25 @@
                             placeholder="Enter your WhatsApp number">
                     </div>
 
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label class="checkbox-option"
+                            style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="oneWeekOffer"
+                                style="width: 20px; height: 20px; accent-color: var(--accent);">
+                            <span style="font-weight: 600; color: var(--accent);">
+                                Interested in One Time Offer: 1 Week Training for ₹499?
+                            </span>
+                        </label>
+
+                        <div id="gpayInfo"
+                            style="display: none; margin-top: 10px; padding: 15px; background: rgba(0, 255, 0, 0.1); border: 1px solid var(--accent); border-radius: 8px;">
+                            <p style="font-size: 0.95rem; color: #fff;">
+                                Great! Please GPay <strong>₹499</strong> to <strong
+                                    style="color: var(--accent);">8433599778</strong> to confirmed your spot.
+                            </p>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label>Preferred Session Time</label>
                         <div class="radio-group">
@@ -134,6 +153,18 @@
         const today = new Date().toISOString().split('T')[0];
         dateInput.min = today;
 
+        // Checkbox Interaction
+        const offerCheckbox = document.getElementById('oneWeekOffer');
+        const gpayInfo = document.getElementById('gpayInfo');
+
+        offerCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                gpayInfo.style.display = 'block';
+            } else {
+                gpayInfo.style.display = 'none';
+            }
+        });
+
         // WhatsApp Booking Logic
         document.getElementById('bookingForm').addEventListener('submit', function (e) {
             e.preventDefault();
@@ -142,17 +173,22 @@
             const phone = document.getElementById('phone').value;
             const date = document.getElementById('date').value;
             const session = document.querySelector('input[name="session_time"]:checked').value;
+            const isOfferSelected = document.getElementById('oneWeekOffer').checked;
 
             // Construct Message
-            const message = `*New Free Trial Booking* 
+            let message = `*New Free Trial Booking* 
 Hey Team MCI, I would like to book a free trial session.
 
 Name: ${name}
 Phone: ${phone}
 Date: ${date}
-Session: ${session}
+Session: ${session}`;
 
-Please confirm my slot.`;
+            if (isOfferSelected) {
+                message += `\n\n*One Time Offer Selected:*\nI am interested in 1 Week Training for ₹499.`;
+            }
+
+            message += `\n\nPlease confirm my slot.`;
 
             // Encode and Redirect
             const encodedMessage = encodeURIComponent(message);
