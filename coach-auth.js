@@ -1,47 +1,61 @@
 /**
- * Simple Client-Side Authentication for MCI Coaches Portal
- * Note: This offers basic privacy but is not secure against determined inspection.
+ * Client-Side Authentication Module for MCI Coaches Portal
+ * 
+ * Provides basic session management and obfuscated credential checking.
+ * Note: Client-side security is inherently limited. This acts as a deterrent
+ * rather than a fortress.
+ * 
+ * @module CoachAuth
  */
 
-const COACH_AUTH_KEY = 'mci_coach_authenticated';
-// A simple hash-like check could be done, but for this level of security (client-side),
-// a direct string comparison obfuscated slightly is sufficient for the requirement.
-// Password: "TrainSmart2026"
-// Password: "12345"
-const VALID_HASH = "12345";
+// Base64 encoded password ("TrainSmart2026")
+// This prevents casual shoulder-surfing or quick source code glances from revealing the password.
+const ENCODED_HASH = "VHJhaW5TbWFydDIwMjY=";
+const SESSION_KEY = 'mci_coach_authenticated';
 
 const CoachAuth = {
     /**
-     * Attempt to login with password
-     * @param {string} password 
-     * @returns {boolean} true if successful
+     * Attempt to login with the provided password.
+     * Compares the Base64 encoded input against the stored hash.
+     * 
+     * @param {string} password - The plain text password entered by the user.
+     * @returns {boolean} - Returns true if authentication is successful, false otherwise.
      */
     login: (password) => {
-        if (password === VALID_HASH) {
-            sessionStorage.setItem(COACH_AUTH_KEY, 'true');
-            return true;
+        try {
+            // Encode the input to compare against the stored hash
+            const inputHash = btoa(password);
+            if (inputHash === ENCODED_HASH) {
+                sessionStorage.setItem(SESSION_KEY, 'true');
+                return true;
+            }
+        } catch (e) {
+            console.error("Auth Error", e);
         }
         return false;
     },
 
     /**
-     * Logout user
+     * Log the user out by clearing the session storage
+     * and redirecting to the login page.
      */
     logout: () => {
-        sessionStorage.removeItem(COACH_AUTH_KEY);
+        sessionStorage.removeItem(SESSION_KEY);
         window.location.href = 'coach-login.html';
     },
 
     /**
-     * Check if user is authenticated
-     * @returns {boolean}
+     * Check if the current user has an active authenticated session.
+     * 
+     * @returns {boolean} - True if authenticated.
      */
     isAuthenticated: () => {
-        return sessionStorage.getItem(COACH_AUTH_KEY) === 'true';
+        return sessionStorage.getItem(SESSION_KEY) === 'true';
     },
 
     /**
-     * Protect a page - redirect if not authenticated
+     * Route Guuard: Redirects unauthenticated users to the login page.
+     * Should be called at the top of protected pages.
      */
     requireAuth: () => {
         if (!CoachAuth.isAuthenticated()) {
@@ -50,7 +64,8 @@ const CoachAuth = {
     },
 
     /**
-     * Redirect connected user away from login page
+     * Guest Guard: Redirects authenticated users away from public auth pages (like login).
+     * Should be called on the login page.
      */
     redirectIfAuthenticated: () => {
         if (CoachAuth.isAuthenticated()) {
