@@ -83,10 +83,22 @@
                         </label>
 
                         <div id="gpayInfo"
-                            style="display: none; margin-top: 10px; padding: 15px; background: rgba(0, 255, 0, 0.1); border: 1px solid var(--accent); border-radius: 8px;">
-                            <p style="font-size: 0.95rem; color: #fff;">
-                                Great! Please GPay <strong>₹499</strong> to <strong
-                                    style="color: var(--accent);">8433599778</strong> to confirmed your spot.
+                            style="display: none; margin-top: 10px; padding: 15px; background: rgba(0, 255, 0, 0.1); border: 1px solid var(--accent); border-radius: 8px; text-align: center;">
+                            <p style="font-size: 0.95rem; color: #fff; margin-bottom: 15px;">
+                                Scan to Pay <strong>₹499</strong> via Quick Pay/UPI
+                            </p>
+                            <!-- QR Code for UPI Payment -->
+                            <img src="assets/payment-qr.jpg" alt="Payment QR Code"
+                                style="border-radius: 5px; margin-bottom: 15px; background: white; padding: 5px; width: 200px; height: auto;">
+
+                            <div style="margin-top: 5px;">
+                                <a href="upi://pay?pa=paytm.s1mm3l1@pty&pn=MasterCalisthenicsIndia&am=499&cu=INR"
+                                    class="btn btn-primary sm"
+                                    style="text-decoration: none; display: inline-block; padding: 8px 20px;">Pay Now
+                                    (Mobile)</a>
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">
+                                Or pay to VPA: <strong style="color: var(--accent);">paytm.s1mm3l1@pty</strong>
                             </p>
                         </div>
                     </div>
