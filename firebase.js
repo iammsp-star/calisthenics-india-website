@@ -6,12 +6,13 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/11.2.0/firebase
 // Your web app's Firebase configuration
 // TODO: Replace with your project's actual config keys
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBwzfZWMDI27GFZ-E9GBvzMb_rvW4Lmv6o",
+    authDomain: "master-calisthenics-india.firebaseapp.com",
+    projectId: "master-calisthenics-india",
+    storageBucket: "master-calisthenics-india.firebasestorage.app",
+    messagingSenderId: "602577156316",
+    appId: "1:602577156316:web:2789120d369b0b3d055c19",
+    measurementId: "G-NDSKBF6GBL"
 };
 
 // Initialize Firebase
