@@ -90,9 +90,11 @@
             <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 0.9rem;">Restricted Access</p>
 
             <form id="loginForm">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <input type="email" id="email" class="form-input" placeholder="Coach Email" required>
+                </div>
                 <div class="form-group">
-                    <input type="password" id="password" class="form-input" placeholder="Enter Access Password"
-                        required>
+                    <input type="password" id="password" class="form-input" placeholder="Password" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">Access Portal</button>
@@ -106,23 +108,36 @@
         </div>
     </section>
 
-    <script src="coach-auth.js"></script>
-    <script>
-        // Redirect if already logged in
-        CoachAuth.redirectIfAuthenticated();
+    <script type="module">
+        import CoachAuth from './coach-auth.js';
 
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
+        // Redirect if already logged in
+        CoachAuth.monitorAuth((user) => {
+            window.location.href = 'coach-portal.html';
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('errorMsg');
+            const submitBtn = document.querySelector('button[type="submit"]');
 
-            if (CoachAuth.login(password)) {
-                // Success
+            // Set loading state
+            submitBtn.innerHTML = 'Signing in...';
+            submitBtn.disabled = true;
+
+            const success = await CoachAuth.login(email, password);
+
+            if (success) {
+                // Redirect handled by monitorAuth or we can force it here
                 window.location.href = 'coach-portal.html';
             } else {
                 // Fail
                 errorMsg.style.display = 'block';
-                document.getElementById('password').value = '';
+                submitBtn.innerHTML = 'Access Portal';
+                submitBtn.disabled = false;
+
                 // Shake animation
                 const card = document.querySelector('.login-card');
                 card.style.transform = 'translateX(10px)';

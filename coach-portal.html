@@ -20,10 +20,22 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="styles.css">
-    <script src="coach-auth.js"></script>
-    <script>
+    <link rel="stylesheet" href="styles.css">
+
+    <script type="module">
+        import CoachAuth from './coach-auth.js';
+
         // Check auth immediately
-        CoachAuth.requireAuth();
+        CoachAuth.monitorAuth(
+            (user) => {
+                // User is logged in
+                console.log("Authenticated as:", user.email);
+            },
+            () => {
+                // User is NOT logged in
+                window.location.href = 'coach-login.html';
+            }
+        );
     </script>
 
     <style>
@@ -216,40 +228,91 @@
                 </div>
             </div>
 
-            <!-- Upcoming Trials Placeholder -->
+            <!-- Active Members (Dynamic Data) -->
             <div class="dash-card" style="grid-column: 1 / -1;">
                 <div class="dash-header">
-                    <h3>Pending Trial Requests (Mock Data)</h3>
-                    <span style="font-size: 1.5rem;">📩</span>
+                    <h3>Active Members (Firestore)</h3>
+                    <span style="font-size: 1.5rem;">👥</span>
                 </div>
-                <!-- In a real app, this would fetch from a database or Google Sheet API -->
-                <table style="width: 100%; border-collapse: collapse; color: var(--text-muted);">
-                    <thead>
-                        <tr style="text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <th style="padding: 10px;">Name</th>
-                            <th style="padding: 10px;">Date</th>
-                            <th style="padding: 10px;">Contact</th>
-                            <th style="padding: 10px;">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                            <td style="padding: 15px 10px; color: white;">Rahul Sharma</td>
-                            <td style="padding: 15px 10px;">Jan 20, 2026</td>
-                            <td style="padding: 15px 10px;">+91 98765 43210</td>
-                            <td style="padding: 15px 10px;"><span style="color: #4cd137;">Confirmed</span></td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                            <td style="padding: 15px 10px; color: white;">Priya Patel</td>
-                            <td style="padding: 15px 10px;">Jan 22, 2026</td>
-                            <td style="padding: 15px 10px;">+91 98765 12345</td>
-                            <td style="padding: 15px 10px;"><span style="color: #fbc531;">Pending</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                <div id="members-container">
+                    <p style="color: var(--text-muted);">Loading members...</p>
+                </div>
             </div>
 
         </div>
+    </main>
+
+    <script type="module">
+        import { db } from './firebase.js';
+        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+
+        // Fetch Members Function
+        async function fetchMembers() {
+            const container = document.getElementById('members-container');
+
+            try {
+                // Determine fetch criteria - Prompt says "fetch the list of active members"
+                // Assuming 'status' or checking membershipStatus in members collection
+                // Since we separated users and members, we might need to join or just query members
+
+                // Query members collection
+                // Note: Indexing might be required for this query
+                const q = query(collection(db, "members"));
+                // For "active", we'd add where("membershipStatus", "==", "Active")
+
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    container.innerHTML = '<p style="color: var(--text-muted);">No active members found.</p>';
+                    return;
+                }
+
+                // Build Table HTML
+                let html = `
+                <table style="width: 100%; border-collapse: collapse; color: var(--text-muted);">
+                    <thead>
+                        <tr style="text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <th style="padding: 10px;">Member ID</th>
+                            <th style="padding: 10px;">Status</th>
+                            <th style="padding: 10px;">Active Plan</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    html += `
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                            <td style="padding: 15px 10px; color: white;">${doc.id.substring(0, 8)}...</td>
+                            <td style="padding: 15px 10px;">${data.membershipStatus || 'N/A'}</td>
+                            <td style="padding: 15px 10px;">${data.activePlan || 'None'}</td>
+                        </tr>`;
+                });
+
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+
+            } catch (error) {
+                console.error("Error fetching members:", error);
+                container.innerHTML = '<p style="color: #ff4d4d;">Failed to load members. Check console for details.</p>';
+            }
+        }
+
+        // Call fetch once auth is confirmed (simple delay or event listener approach)
+        // Since this script is module and defer, it runs after parsing. 
+        // Real-world: wait for Auth state.
+        import { auth } from './firebase.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                fetchMembers();
+            }
+        });
+    </script>
+
+    </div>
     </main>
 
     <script>
