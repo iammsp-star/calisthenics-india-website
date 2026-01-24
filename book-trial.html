@@ -159,7 +159,14 @@
     </footer>
 
     <script src="script.js"></script>
-    <script>
+    <script type="module">
+        import { db } from './firebase.js';
+        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+
+        // *** CONFIGURATION ***
+        // TODO: Replace this URL with your deployed Google Web App URL
+        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE';
+
         // Set minimum date to today
         const dateInput = document.getElementById('date');
         const today = new Date().toISOString().split('T')[0];
@@ -177,9 +184,14 @@
             }
         });
 
-        // WhatsApp Booking Logic
-        document.getElementById('bookingForm').addEventListener('submit', function (e) {
+        // Booking Logic
+        document.getElementById('bookingForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerText;
+            submitBtn.innerText = 'Processing...';
+            submitBtn.disabled = true;
 
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
@@ -187,8 +199,47 @@
             const session = document.querySelector('input[name="session_time"]:checked').value;
             const isOfferSelected = document.getElementById('oneWeekOffer').checked;
 
-            // Construct Message
-            let message = `*New Free Trial Booking* 
+            const formData = {
+                name: name,
+                phone: phone,
+                date: date,
+                session: session,
+                offerSelected: isOfferSelected,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                // 1. Save to Firestore (Backup & potentially for Portal)
+                // We'll create a 'leads' collection
+                try {
+                    await addDoc(collection(db, "leads"), formData);
+                    console.log("Lead saved to Firestore");
+                } catch (fsError) {
+                    console.error("Firestore save failed:", fsError);
+                    // Continue anyway, unexpected backend error shouldn't stop WhatsApp flow
+                }
+
+                // 2. Send to Google Sheet
+                if (GOOGLE_SCRIPT_URL !== 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE') {
+                    try {
+                        await fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors', // Important for Google Apps Script
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(formData)
+                        });
+                        console.log("Sent to Google Sheet");
+                    } catch (sheetError) {
+                        console.error("Sheet Sync failed:", sheetError);
+                    }
+                } else {
+                    console.warn("Google Script URL not set. Skipping Sheet sync.");
+                }
+
+                // 3. Construct WhatsApp Message
+                let message = `*New Free Trial Booking* 
 Hey Team MCI, I would like to book a free trial session.
 
 Name: ${name}
@@ -196,19 +247,26 @@ Phone: ${phone}
 Date: ${date}
 Session: ${session}`;
 
-            if (isOfferSelected) {
-                message += `\n\n*One Time Offer Selected:*\nI am interested in 1 Week Training for ₹499.`;
+                if (isOfferSelected) {
+                    message += `\n\n*One Time Offer Selected:*\nI am interested in 1 Week Training for ₹499.`;
+                }
+
+                message += `\n\nPlease confirm my slot.`;
+
+                // Encode and Redirect
+                const encodedMessage = encodeURIComponent(message);
+                const whatsappUrl = `https://wa.me/918433599778?text=${encodedMessage}`;
+
+                window.location.href = whatsappUrl;
+
+            } catch (err) {
+                console.error("General Error:", err);
+                alert("Something went wrong. Redirecting you to WhatsApp directly.");
+
+                // Fallback redirect
+                window.location.href = "https://wa.me/918433599778";
             }
-
-            message += `\n\nPlease confirm my slot.`;
-
-            // Encode and Redirect
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/918433599778?text=${encodedMessage}`;
-
-            window.location.href = whatsappUrl;
         });
     </script>
-</body>
 
 </html>
