@@ -7,7 +7,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 import {
     doc,
-    setDoc
+    setDoc,
+    getDoc
 } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 /**
@@ -64,6 +65,7 @@ const CoachAuth = {
     login: async (email, password) => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
+            // Verification happens in monitorAuth redirect
             return true;
         } catch (error) {
             console.error("Login Failed:", error.message);
@@ -84,17 +86,34 @@ const CoachAuth = {
     },
 
     /**
-     * Monitor authentication state.
+     * Monitor authentication and authorization state.
+     * Checks if user is authenticated AND has 'Coach' role.
      * 
-     * @param {Function} onAuth - Callback when authenticated
-     * @param {Function} onUnauth - Callback when not authenticated
+     * @param {Function} onAuth - Callback when authenticated and authorized
+     * @param {Function} onUnauth - Callback when not authenticated or unauthorized
      */
     monitorAuth: (onAuth, onUnauth) => {
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Check if user has coach role if using custom claims (advanced)
-                // For now, assume any authenticated user is a coach or authorized staff
-                if (onAuth) onAuth(user);
+                try {
+                    // Check user role in Firestore
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDoc = await getDoc(userDocRef);
+
+                    if (userDoc.exists() && userDoc.data().role === 'Coach') {
+                        // User is a coach
+                        if (onAuth) onAuth(user);
+                    } else {
+                        // User is logged in but NOT a coach
+                        console.warn("Unauthorized access attempt by:", user.email);
+                        await signOut(auth); // Force logout
+                        if (onUnauth) onUnauth();
+                    }
+                } catch (error) {
+                    console.error("Error verifying role:", error);
+                    // Fail safe
+                    if (onUnauth) onUnauth();
+                }
             } else {
                 if (onUnauth) onUnauth();
             }
@@ -102,7 +121,7 @@ const CoachAuth = {
     }
 };
 
-// Expose to window for easy access in HTML (optional, but keeps existing pattern working with tweaks)
+// Expose to window for easy access in HTML
 window.CoachAuth = CoachAuth;
 
 export default CoachAuth;

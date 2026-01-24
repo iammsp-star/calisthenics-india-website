@@ -112,9 +112,30 @@
         import CoachAuth from './coach-auth.js';
 
         // Redirect if already logged in
-        CoachAuth.monitorAuth((user) => {
-            window.location.href = 'coach-portal.html';
-        });
+        CoachAuth.monitorAuth(
+            (user) => {
+                window.location.href = 'coach-portal.html';
+            },
+            () => {
+                // Not authenticated or logged out (access denied)
+                const submitBtn = document.querySelector('button[type="submit"]');
+                const errorMsg = document.getElementById('errorMsg');
+
+                // If we were loading (user just tried to login), reset UI
+                if (submitBtn.disabled && submitBtn.innerHTML.includes('Verifying')) {
+                    submitBtn.innerHTML = 'Access Portal';
+                    submitBtn.disabled = false;
+                    errorMsg.innerText = 'Access Denied: Coaches only.';
+                    errorMsg.style.display = 'block';
+
+                    // Shake
+                    const card = document.querySelector('.login-card');
+                    card.style.transform = 'translateX(10px)';
+                    setTimeout(() => card.style.transform = 'translateX(-10px)', 100);
+                    setTimeout(() => card.style.transform = 'translateX(0)', 200);
+                }
+            }
+        );
 
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -124,16 +145,18 @@
             const submitBtn = document.querySelector('button[type="submit"]');
 
             // Set loading state
-            submitBtn.innerHTML = 'Signing in...';
+            submitBtn.innerHTML = 'Verifying Access...';
             submitBtn.disabled = true;
+            errorMsg.style.display = 'none';
 
             const success = await CoachAuth.login(email, password);
 
             if (success) {
-                // Redirect handled by monitorAuth or we can force it here
-                window.location.href = 'coach-portal.html';
+                // Do NOT redirect manually. Wait for monitorAuth to confirm role.
+                // If role check fails, monitorAuth calls onUnauth, which resets UI.
             } else {
                 // Fail
+                errorMsg.innerText = 'Incorrect password or email.';
                 errorMsg.style.display = 'block';
                 submitBtn.innerHTML = 'Access Portal';
                 submitBtn.disabled = false;

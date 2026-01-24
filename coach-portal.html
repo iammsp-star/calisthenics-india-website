@@ -24,242 +24,37 @@
 
     <script type="module">
         import CoachAuth from './coach-auth.js';
+        import { db } from './firebase.js';
+        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
-        // Check auth immediately
+        // Initialize Portal
         CoachAuth.monitorAuth(
             (user) => {
-                // User is logged in
-                console.log("Authenticated as:", user.email);
+                // Success: User is logged in AND is a Coach
+                console.log("Authenticated as Coach:", user.email);
+
+                // Show welcome message
+                if (window.innerWidth > 768) {
+                    document.getElementById('welcome-text').style.display = 'block';
+                }
+
+                // Fetch Data
+                fetchMembers();
             },
             () => {
-                // User is NOT logged in
+                // Failure: User not logged in OR not a Coach
+                console.warn("Access Denied");
                 window.location.href = 'coach-login.html';
             }
         );
-    </script>
-
-    <style>
-        .portal-nav {
-            background: #1a1a1a;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .portal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            background: var(--accent);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .dash-card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .dash-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .stat-big {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .list-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            .portal-header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                margin-top: 20px;
-            }
-
-            .dash-card {
-                padding: 20px;
-            }
-
-            .stat-big {
-                font-size: 2rem;
-            }
-
-            main.container {
-                padding: 20px !important;
-                /* Override inline style */
-            }
-
-            h1 {
-                font-size: 1.5rem !important;
-                /* Override inline style */
-                text-align: center;
-            }
-
-            p {
-                text-align: center;
-                font-size: 0.9rem;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <nav class="portal-nav">
-        <div class="container portal-header">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="assets/logo.png" alt="MCI" height="40"
-                    style="border-radius: 50%; border: 1px solid var(--accent);">
-                <span style="font-weight: 700; font-size: 1.2rem;">Coach Portal</span>
-            </div>
-
-            <div class="user-badge">
-                <div style="text-align: right; display: none; margin-right: 10px;" id="welcome-text">
-                    <div style="font-size: 0.9rem; font-weight: 600;">Welcome, Coach</div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">MCI Team</div>
-                </div>
-                <div class="avatar">C</div>
-                <button onclick="CoachAuth.logout()" class="btn btn-outline"
-                    style="padding: 8px 15px; font-size: 0.8rem; margin-left: 10px;">Logout</button>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container" style="padding: 40px 20px;">
-        <h1 style="font-size: 2rem;">Dashboard Overview</h1>
-        <p style="color: var(--text-muted);">Welcome back to the internal management system.</p>
-
-        <div class="dashboard-grid">
-
-            <!-- Helper Card -->
-            <div class="dash-card">
-                <div class="dash-header">
-                    <h3>Quick Actions</h3>
-                    <span style="font-size: 1.5rem;">⚡</span>
-                </div>
-                <!-- Assuming the schedule Google Sheet would be linked here eventually -->
-                <a href="#" class="btn btn-primary btn-block" style="text-align: center; margin-bottom: 15px;">View
-                    Schedule Sheet</a>
-                <a href="#" class="btn btn-outline btn-block"
-                    style="text-align: center; border-color: rgba(255,255,255,0.2);">Log Daily Report</a>
-            </div>
-
-            <!-- Stats Card -->
-            <div class="dash-card">
-                <div class="dash-header">
-                    <h3>This Week</h3>
-                    <span style="font-size: 1.5rem;">📅</span>
-                </div>
-                <div style="display: flex; gap: 30px;">
-                    <div>
-                        <div class="stat-big">12</div>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">Classes</div>
-                    </div>
-                    <div>
-                        <div class="stat-big">8</div>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">New Trials</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Resources -->
-            <div class="dash-card">
-                <div class="dash-header">
-                    <h3>Recent Resources</h3>
-                    <span style="font-size: 1.5rem;">📂</span>
-                </div>
-
-                <div class="list-item">
-                    <span>Beginner Progression Guide v2.pdf</span>
-                    <span style="color: var(--accent);">Download</span>
-                </div>
-                <div class="list-item">
-                    <span>Nutrition Guidelines.docx</span>
-                    <span style="color: var(--accent);">Download</span>
-                </div>
-                <div class="list-item">
-                    <span>MCI Brand Assets.zip</span>
-                    <span style="color: var(--accent);">Download</span>
-                </div>
-            </div>
-
-            <!-- Active Members (Dynamic Data) -->
-            <div class="dash-card" style="grid-column: 1 / -1;">
-                <div class="dash-header">
-                    <h3>Active Members (Firestore)</h3>
-                    <span style="font-size: 1.5rem;">👥</span>
-                </div>
-
-                <div id="members-container">
-                    <p style="color: var(--text-muted);">Loading members...</p>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <script type="module">
-        import { db } from './firebase.js';
-        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
         // Fetch Members Function
         async function fetchMembers() {
             const container = document.getElementById('members-container');
 
             try {
-                // Determine fetch criteria - Prompt says "fetch the list of active members"
-                // Assuming 'status' or checking membershipStatus in members collection
-                // Since we separated users and members, we might need to join or just query members
-
                 // Query members collection
-                // Note: Indexing might be required for this query
                 const q = query(collection(db, "members"));
-                // For "active", we'd add where("membershipStatus", "==", "Active")
 
                 const querySnapshot = await getDocs(q);
 
@@ -282,10 +77,17 @@
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
+                    const memberId = doc.id.substring(0, 8); // Shorten ID for display
                     html += `
                         <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                            <td style="padding: 15px 10px; color: white;">${doc.id.substring(0, 8)}...</td>
-                            <td style="padding: 15px 10px;">${data.membershipStatus || 'N/A'}</td>
+                            <td style="padding: 15px 10px; color: white;">${memberId}...</td>
+                            <td style="padding: 15px 10px;">
+                                <span style="background: ${data.membershipStatus === 'Active' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; 
+                                       color: ${data.membershipStatus === 'Active' ? '#4caf50' : 'inherit'};
+                                       padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">
+                                    ${data.membershipStatus || 'Pending'}
+                                </span>
+                            </td>
                             <td style="padding: 15px 10px;">${data.activePlan || 'None'}</td>
                         </tr>`;
                 });
@@ -295,21 +97,15 @@
 
             } catch (error) {
                 console.error("Error fetching members:", error);
-                container.innerHTML = '<p style="color: #ff4d4d;">Failed to load members. Check console for details.</p>';
+
+                // Improve error message if it's a permission issue
+                if (error.code === 'permission-denied') {
+                    container.innerHTML = '<p style="color: #ff9800;">Permission Denied. Please ensure you are logged in as a Coach.</p>';
+                } else {
+                    container.innerHTML = '<p style="color: #ff4d4d;">Failed to load members. Check console.</p>';
+                }
             }
         }
-
-        // Call fetch once auth is confirmed (simple delay or event listener approach)
-        // Since this script is module and defer, it runs after parsing. 
-        // Real-world: wait for Auth state.
-        import { auth } from './firebase.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                fetchMembers();
-            }
-        });
     </script>
 
     </div>
@@ -320,6 +116,6 @@
             document.getElementById('welcome-text').style.display = 'block';
         }
     </script>
-</body>
+    </body>
 
 </html>
