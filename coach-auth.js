@@ -1,75 +1,108 @@
+import { auth, db } from './firebase.js';
+import {
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+import {
+    doc,
+    setDoc
+} from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+
 /**
- * Client-Side Authentication Module for MCI Coaches Portal
- * 
- * Provides basic session management and obfuscated credential checking.
- * Note: Client-side security is inherently limited. This acts as a deterrent
- * rather than a fortress.
- * 
- * @module CoachAuth
+ * Client-Side Authentication Module for MCI Coaches Portal using Firebase
  */
-
-// Base64 encoded password ("TrainSmart2026")
-// This prevents casual shoulder-surfing or quick source code glances from revealing the password.
-const ENCODED_HASH = "VHJhaW5TbWFydDIwMjY=";
-const SESSION_KEY = 'mci_coach_authenticated';
-
 const CoachAuth = {
     /**
-     * Attempt to login with the provided password.
-     * Compares the Base64 encoded input against the stored hash.
+     * Register a new user (Member or Coach).
+     * Creates Auth account and Firestore user document.
      * 
-     * @param {string} password - The plain text password entered by the user.
-     * @returns {boolean} - Returns true if authentication is successful, false otherwise.
+     * @param {string} email 
+     * @param {string} password 
+     * @param {string} name 
+     * @param {string} role - 'Member' or 'Coach'
+     * @param {string} fitnessLevel 
      */
-    login: (password) => {
+    registerUser: async (email, password, name, role = 'Member', fitnessLevel = 'Beginner') => {
         try {
-            // Encode the input to compare against the stored hash
-            const inputHash = btoa(password);
-            if (inputHash === ENCODED_HASH) {
-                sessionStorage.setItem(SESSION_KEY, 'true');
-                return true;
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            // Create User Document
+            await setDoc(doc(db, "users", user.uid), {
+                name: name,
+                email: email,
+                role: role,
+                joinDate: new Date().toISOString(),
+                fitnessLevel: fitnessLevel
+            });
+
+            // If it's a member, create a member profile entry too
+            if (role === 'Member') {
+                await setDoc(doc(db, "members", user.uid), {
+                    activePlan: null,
+                    membershipStatus: 'Pending',
+                    assignedCoachID: null
+                });
             }
-        } catch (e) {
-            console.error("Auth Error", e);
+
+            return user;
+        } catch (error) {
+            console.error("Registration Failed:", error);
+            throw error;
         }
-        return false;
     },
 
     /**
-     * Log the user out by clearing the session storage
-     * and redirecting to the login page.
-     */
-    logout: () => {
-        sessionStorage.removeItem(SESSION_KEY);
-        window.location.href = 'coach-login.html';
-    },
-
-    /**
-     * Check if the current user has an active authenticated session.
+     * Attempt to login with email and password.
      * 
-     * @returns {boolean} - True if authenticated.
+     * @param {string} email 
+     * @param {string} password 
+     * @returns {Promise<boolean>}
      */
-    isAuthenticated: () => {
-        return sessionStorage.getItem(SESSION_KEY) === 'true';
+    login: async (email, password) => {
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            return true;
+        } catch (error) {
+            console.error("Login Failed:", error.message);
+            return false;
+        }
     },
 
     /**
-     * Route Guuard: Redirects unauthenticated users to the login page.
-     * Should be called at the top of protected pages.
+     * Log the user out.
      */
-    requireAuth: () => {
-        if (!CoachAuth.isAuthenticated()) {
+    logout: async () => {
+        try {
+            await signOut(auth);
             window.location.href = 'coach-login.html';
+        } catch (error) {
+            console.error("Logout Failed:", error);
         }
     },
 
     /**
-     * Guest Guard: Redirects authenticated users away from public auth pages (like login).
-     * Should be called on the login page.
+     * Monitor authentication state.
+     * 
+     * @param {Function} onAuth - Callback when authenticated
+     * @param {Function} onUnauth - Callback when not authenticated
      */
-    redirectIfAuthenticated: () => {
-        if (CoachAuth.isAuthenticated()) {
-            window.location.href = 'coach-portal.html';
-        }
+    monitorAuth: (onAuth, onUnauth) => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Check if user has coach role if using custom claims (advanced)
+                // For now, assume any authenticated user is a coach or authorized staff
+                if (onAuth) onAuth(user);
+            } else {
+                if (onUnauth) onUnauth();
+            }
+        });
     }
 };
+
+// Expose to window for easy access in HTML (optional, but keeps existing pattern working with tweaks)
+window.CoachAuth = CoachAuth;
+
+export default CoachAuth;

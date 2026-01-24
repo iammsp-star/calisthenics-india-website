@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // User role helper
+    function isCoach() {
+      // Check if the user document has role 'Coach'
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Coach';
+    }
+
+    // Users Collection (Profile Data)
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isCoach());
+      allow write: if request.auth != null && request.auth.uid == userId; // Users create their own profile on signup
+    }
+
+    // Members Collection (Membership status, plans)
+    match /members/{memberId} {
+      // Member ID should match Auth UID
+      allow read: if request.auth != null && (request.auth.uid == memberId || isCoach());
+      // Only coaches can update membership status/plans usually? 
+      // Prompt says "Members can only read and write their own profile" -> implying 'users' collection?
+      // "members collection... Linked to Auth UID".
+      allow write: if request.auth != null && request.auth.uid == memberId; 
+    }
+
+    // Workouts Collection
+    match /workouts/{workoutId} {
+      allow read: if request.auth != null; // Members need to see workouts
+      allow write: if request.auth != null && isCoach();
+    }
+
+    // Check-ins Collection
+    match /checkins/{checkinId} {
+      allow read: if request.auth != null && (resource.data.memberID == request.auth.uid || isCoach());
+      allow create: if request.auth != null && request.resource.data.memberID == request.auth.uid;
+      allow update, delete: if request.auth != null && (resource.data.memberID == request.auth.uid || isCoach());
+    }
+  }
+}
