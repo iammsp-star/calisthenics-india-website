@@ -103,6 +103,10 @@ const CoachAuth = {
                     if (userDoc.exists() && userDoc.data().role === 'Coach') {
                         // User is a coach
                         if (onAuth) onAuth(user);
+                    } else if (user.email === 'mastercalisthenics25@gmail.com') {
+                        // Master Admin Override
+                        console.log("Master Admin Access Granted");
+                        if (onAuth) onAuth(user);
                     } else {
                         // User is logged in but NOT a coach
                         console.warn("Unauthorized access attempt by:", user.email);

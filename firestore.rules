@@ -3,9 +3,12 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     // User role helper
+    // User role helper
     function isCoach() {
-      // Check if the user document has role 'Coach'
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Coach';
+      // Check if the user document has role 'Coach' or is Master Admin
+      return request.auth.token.email == 'mastercalisthenics25@gmail.com' || 
+             (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Coach');
     }
 
     // Users Collection (Profile Data)
