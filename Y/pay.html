@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Payment | Master Calisthenics India</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        .payment-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)), url('assets/hero_bg.png');
+            background-size: cover;
+            text-align: center;
+            color: #fff;
+        }
+
+        .payment-card {
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .amount {
+            font-size: 2.5rem;
+            color: var(--status-green);
+            /* Assuming green fits the success vibe */
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="payment-section">
+        <div class="payment-card">
+            <h2>Renew Membership</h2>
+            <p id="userName" style="color: var(--text-muted);">Fetching details...</p>
+
+            <div class="amount" id="amountDisplay">--</div>
+
+            <button id="payBtn" class="btn btn-primary btn-block" disabled>Pay Now</button>
+            <p id="statusMsg" style="margin-top: 1rem; font-size: 0.9rem;"></p>
+        </div>
+    </section>
+
+    <script type="module">
+        import { supabase } from './supabase.js';
+        import { createPayment } from './payments.js';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('uid'); // Expecting ?uid=UUID
+
+        const payBtn = document.getElementById('payBtn');
+        const statusMsg = document.getElementById('statusMsg');
+
+        async function loadUser() {
+            if (!userId) {
+                statusMsg.innerText = "Invalid Link. Please contact support.";
+                return;
+            }
+
+            try {
+                const { data: member, error } = await supabase
+                    .from('members')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+
+                if (error) throw error;
+
+                document.getElementById('userName').innerText = `Hi ${member.name}, ready to train?`;
+
+                // Determine Amount based on Program (Simple logic for now)
+                let amount = 4000; // Default
+                if (member.program_type.includes('Personal')) amount = 12000;
+                if (member.program_type.includes('Kids')) amount = 4000;
+
+                document.getElementById('amountDisplay').innerText = '₹' + amount;
+
+                payBtn.disabled = false;
+                payBtn.onclick = () => {
+                    createPayment(amount, member.name, `Renewal: ${member.program_type}`);
+                };
+
+            } catch (err) {
+                console.error(err);
+                statusMsg.innerText = "Could not find member details.";
+                statusMsg.style.color = "red";
+            }
+        }
+
+        loadUser();
+    </script>
+
+</body>
+
+</html>
