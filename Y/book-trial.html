@@ -160,8 +160,6 @@
 
     <script src="script.js"></script>
     <script type="module">
-        import { db } from './firebase.js';
-        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
         // *** CONFIGURATION ***
         // TODO: Replace this URL with your deployed Google Web App URL
@@ -209,15 +207,6 @@
             };
 
             try {
-                // 1. Save to Firestore (Backup & potentially for Portal)
-                // We'll create a 'leads' collection
-                try {
-                    await addDoc(collection(db, "leads"), formData);
-                    console.log("Lead saved to Firestore");
-                } catch (fsError) {
-                    console.error("Firestore save failed:", fsError);
-                    // Continue anyway, unexpected backend error shouldn't stop WhatsApp flow
-                }
 
                 // 2. Send to Google Sheet
                 if (GOOGLE_SCRIPT_URL !== 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE') {
