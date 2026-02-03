@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Dashboard | Master Calisthenics Elite</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        :root {
+            --status-green: #4CAF50;
+            --status-yellow: #FFC107;
+            --status-red: #F44336;
+        }
+
+        body {
+            background-color: #0d1117;
+            color: #fff;
+        }
+
+        .dashboard-header {
+            background: #161b22;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #30363d;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #161b22;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .filters-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            background: #161b22;
+            color: #fff;
+            border: 1px solid #30363d;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .member-card {
+            background: #161b22;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #30363d;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .member-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .status-strip {
+            height: 6px;
+            width: 100%;
+        }
+
+        .status-green {
+            background-color: var(--status-green);
+        }
+
+        .status-yellow {
+            background-color: var(--status-yellow);
+        }
+
+        .status-red {
+            background-color: var(--status-red);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .member-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .member-program {
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            background: rgba(245, 124, 0, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .member-details {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .days-remaining {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .days-value {
+            font-size: 1.2rem;
+        }
+
+        .loading {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ff4444;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="dashboard-header">
+        <div class="logo">MCE Coach</div>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" style="color: var(--status-green)" id="count-active">0</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: var(--status-yellow)" id="count-expiring">0</div>
+                <div class="stat-label">Expiring Soon</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: var(--status-red)" id="count-expired">0</div>
+                <div class="stat-label">Fees Expired</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+            <select id="programFilter" class="filter-select">
+                <option value="all">All Programs</option>
+                <option value="Group Batch">Group</option>
+                <option value="Personal Training">Personal</option>
+                <option value="Kids Fitness">Kids</option>
+                <option value="Women Special">Women</option>
+                <option value="Group Personalise">Group Personalise</option>
+            </select>
+            <select id="statusFilter" class="filter-select">
+                <option value="all">All Statuses</option>
+                <option value="green">Active</option>
+                <option value="yellow">Upcoming Payment</option>
+                <option value="red">Fees Expired</option>
+            </select>
+            <button id="refreshBtn" class="btn btn-primary sm" style="margin-left: auto;">Refresh</button>
+        </div>
+
+        <!-- Members Grid -->
+        <div id="membersGrid" class="members-grid">
+            <div class="loading">Loading members...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from '../supabase.js';
+
+        let allMembers = [];
+
+        // Check Auth
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = '../coach-login.html';
+            }
+        }
+        checkAuth();
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = '../coach-login.html';
+        });
+
+        // Fetch Data
+        async function fetchMembers() {
+            const grid = document.getElementById('membersGrid');
+            grid.innerHTML = '<div class="loading">Loading members...</div>';
+
+            try {
+                // Fetch from MCE table
+                const { data, error } = await supabase
+                    .from('MCE')
+                    .select('*');
+
+                if (error) throw error;
+
+                // Process data to calculate days remaining
+                allMembers = data.map(member => {
+                    const expiry = new Date(member.membership_expiry);
+                    const today = new Date();
+                    // Reset time to midnight for accurate day calculation
+                    today.setHours(0, 0, 0, 0);
+                    expiry.setHours(0, 0, 0, 0);
+
+                    const diffTime = expiry - today;
+                    const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    let color = 'green';
+                    let status = 'Active';
+
+                    if (days <= 0) {
+                        color = 'red';
+                        status = 'Fees Expired';
+                    } else if (days <= 5) {
+                        color = 'yellow';
+                        status = 'Upcoming Payment';
+                    }
+
+                    return {
+                        ...member,
+                        days_remaining: days,
+                        traffic_light_color: color,
+                        status_text: status
+                    };
+                });
+
+                // Sort by days remaining (ascending)
+                allMembers.sort((a, b) => a.days_remaining - b.days_remaining);
+
+                renderMembers();
+                updateStats();
+
+            } catch (err) {
+                console.error('Error fetching members:', err);
+                grid.innerHTML = `<div class="loading" style="color: red;">Error loading members: ${err.message}</div>`;
+            }
+        }
+
+        // Render Members
+        function renderMembers() {
+            const grid = document.getElementById('membersGrid');
+            const programFilter = document.getElementById('programFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            // Filter
+            const filtered = allMembers.filter(member => {
+                const matchProgram = programFilter === 'all' || member.program_type === programFilter;
+                const matchStatus = statusFilter === 'all' || member.traffic_light_color === statusFilter;
+                return matchProgram && matchStatus;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="loading">No members found matching filters.</div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(member => {
+                const color = member.traffic_light_color; // 'red', 'yellow', 'green'
+                const days = member.days_remaining;
+                const statusText = member.status_text;
+
+                // Status message logic
+                let daysText = '';
+                if (days < 0) daysText = `${Math.abs(days)} days overdue`;
+                else if (days === 0) daysText = 'Expires Today';
+                else daysText = `${days} days left`;
+
+                return `
+                    <div class="member-card">
+                        <div class="status-strip status-${color}"></div>
+                        <div class="card-body">
+                            <h3 class="member-name">${member.full_name || 'Unknown Name'}</h3>
+                            <div class="member-program">${member.program_type || 'N/A'}</div>
+                            <div class="member-details">📞 ${member.phone || 'N/A'}</div>
+                            <div class="member-details">📅 Exp: ${new Date(member.membership_expiry).toLocaleDateString()}</div>
+                            
+                            <div class="days-remaining">
+                                <span style="color: var(--status-${color})">${statusText}</span>
+                                <span class="days-value">${daysText}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update Stats
+        function updateStats() {
+            const active = allMembers.filter(m => m.traffic_light_color === 'green').length;
+            const expiring = allMembers.filter(m => m.traffic_light_color === 'yellow').length;
+            const expired = allMembers.filter(m => m.traffic_light_color === 'red').length;
+
+            document.getElementById('count-active').innerText = active;
+            document.getElementById('count-expiring').innerText = expiring;
+            document.getElementById('count-expired').innerText = expired;
+        }
+
+        // Event Listeners
+        document.getElementById('programFilter').addEventListener('change', renderMembers);
+        document.getElementById('statusFilter').addEventListener('change', renderMembers);
+
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            fetchMembers();
+        });
+
+        // Initialize
+        fetchMembers();
+
+    </script>
+</body>
+
+</html>
