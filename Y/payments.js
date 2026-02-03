@@ -8,7 +8,7 @@ export const createPayment = async (amount, name, description) => {
         "key": "YOUR_RAZORPAY_KEY_ID", // Enter the Key ID generated from the Dashboard
         "amount": amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
         "currency": "INR",
-        "name": "Master Calisthenics India",
+        "name": "Master Calisthenics Elite",
         "description": description,
         "image": "assets/logo.png",
         // "order_id": "order_9A33XWu170g81s", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
