@@ -160,10 +160,7 @@
 
     <script src="script.js"></script>
     <script type="module">
-
-        // *** CONFIGURATION ***
-        // TODO: Replace this URL with your deployed Google Web App URL
-        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE';
+        import { supabase } from './supabase.js';
 
         // Set minimum date to today
         const dateInput = document.getElementById('date');
@@ -187,7 +184,6 @@
             e.preventDefault();
 
             const submitBtn = this.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerText;
             submitBtn.innerText = 'Processing...';
             submitBtn.disabled = true;
 
@@ -197,34 +193,25 @@
             const session = document.querySelector('input[name="session_time"]:checked').value;
             const isOfferSelected = document.getElementById('oneWeekOffer').checked;
 
-            const formData = {
-                name: name,
-                phone: phone,
-                date: date,
-                session: session,
-                offerSelected: isOfferSelected,
-                timestamp: new Date().toISOString()
-            };
-
             try {
+                // 2. Send to Supabase
+                const { data, error } = await supabase
+                    .from('trial_bookings')
+                    .insert([
+                        {
+                            name: name,
+                            phone: phone,
+                            trial_date: date,
+                            session_time: session,
+                            offer_selected: isOfferSelected
+                        }
+                    ]);
 
-                // 2. Send to Google Sheet
-                if (GOOGLE_SCRIPT_URL !== 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE') {
-                    try {
-                        await fetch(GOOGLE_SCRIPT_URL, {
-                            method: 'POST',
-                            mode: 'no-cors', // Important for Google Apps Script
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(formData)
-                        });
-                        console.log("Sent to Google Sheet");
-                    } catch (sheetError) {
-                        console.error("Sheet Sync failed:", sheetError);
-                    }
+                if (error) {
+                    console.error("Supabase Error:", error);
+                    // We continue to WhatsApp even if DB fails
                 } else {
-                    console.warn("Google Script URL not set. Skipping Sheet sync.");
+                    console.log("Saved to Supabase:", data);
                 }
 
                 // 3. Construct WhatsApp Message
@@ -250,8 +237,6 @@ Session: ${session}`;
 
             } catch (err) {
                 console.error("General Error:", err);
-                alert("Something went wrong. Redirecting you to WhatsApp directly.");
-
                 // Fallback redirect
                 window.location.href = "https://wa.me/918433599778";
             }
