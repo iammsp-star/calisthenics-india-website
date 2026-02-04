@@ -301,6 +301,30 @@
                 else if (days === 0) daysText = 'Expires Today';
                 else daysText = `${days} days left`;
 
+                // Calculate Tenure (Consistency)
+                const start = new Date(member.membership_start);
+                const now = new Date();
+                let years = now.getFullYear() - start.getFullYear();
+                let months = now.getMonth() - start.getMonth();
+                let diffDays = now.getDate() - start.getDate();
+
+                if (diffDays < 0) {
+                    months--;
+                    const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                    diffDays += prevMonth.getDate();
+                }
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                const tenureParts = [];
+                if (years > 0) tenureParts.push(`${years} ${years === 1 ? 'Year' : 'Years'}`);
+                if (months > 0) tenureParts.push(`${months} ${months === 1 ? 'Month' : 'Months'}`);
+                if (diffDays > 0) tenureParts.push(`${diffDays} ${diffDays === 1 ? 'Day' : 'Days'}`);
+
+                const tenureText = tenureParts.length > 0 ? tenureParts.join(', ') : 'Just joined';
+
                 return `
                     <div class="member-card">
                         <div class="status-strip status-${color}"></div>
@@ -309,6 +333,7 @@
                             <div class="member-program">${member.program_type}</div>
                             <div class="member-details">📞 ${member.phone}</div>
                             <div class="member-details">📅 Started: ${new Date(member.membership_start).toLocaleDateString()}</div>
+                            <div class="member-details" style="color: var(--accent); font-weight: 500;">Consistency: ${tenureText}</div>
                             
                             <div class="days-remaining">
                                 <span style="color: var(--status-${color})">${statusText}</span>
