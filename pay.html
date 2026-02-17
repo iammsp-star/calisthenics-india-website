@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complete Payment | Master Calisthenics Elite</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Security Meta Tags -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' https:;">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         .payment-section {
