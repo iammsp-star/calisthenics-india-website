@@ -189,7 +189,7 @@ h6 {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background-image: url('assets/hero_bg.png');
+    background-image: url('assets/hero_bg_new.png');
     /* Will generate this */
     background-size: cover;
     background-position: center;
@@ -416,7 +416,7 @@ h6 {
 
 /* Footer & CTA */
 .cta-section {
-    background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('assets/hero_bg.png');
+    background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('assets/hero_bg_new.png');
     background-size: cover;
     background-position: center;
     padding: 80px 0;
