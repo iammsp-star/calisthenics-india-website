@@ -189,8 +189,7 @@ h6 {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background-image: url('assets/hero_bg_new.png');
-    /* Will generate this */
+    background-image: url('assets/hero_bg.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
