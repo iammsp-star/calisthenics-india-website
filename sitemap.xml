@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://mastercalisthenicselite.com/</loc>
+    <loc>https://www.mastercalisthenicsindia.com/</loc>
+    <lastmod>2026-03-16</lastmod>
     <priority>1.0</priority>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://mastercalisthenicselite.com/book-trial.html</loc>
+    <loc>https://www.mastercalisthenicsindia.com/book-trial.html</loc>
+    <lastmod>2026-03-16</lastmod>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://mastercalisthenicselite.com/coach-login.html</loc>
-    <priority>0.5</priority>
+    <loc>https://www.mastercalisthenicsindia.com/pay.html</loc>
+    <lastmod>2026-03-16</lastmod>
+    <priority>0.6</priority>
     <changefreq>monthly</changefreq>
   </url>
 </urlset>
