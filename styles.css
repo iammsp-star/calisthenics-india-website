@@ -180,6 +180,48 @@ h6 {
     padding: 10px 24px;
 }
 
+/* Dropdown Navigation Menu */
+.dropdown {
+    display: inline-block;
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 2rem;
+    background-color: var(--card-bg);
+    min-width: 220px;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 10px 0;
+    margin-top: 5px;
+}
+
+.dropdown-content a {
+    color: var(--text-main);
+    padding: 10px 20px;
+    text-decoration: none;
+    display: block;
+    margin-left: 0 !important;
+    font-size: 0.95rem;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.dropdown-content a:hover {
+    background-color: rgba(245, 124, 0, 0.1);
+    color: var(--accent);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+
 /* Hero Section */
 .hero {
     height: 100vh;
@@ -654,6 +696,34 @@ h6 {
     .cta-section {
         padding: 50px 0;
     }
+
+    /* Mobile Dropdown styles */
+    .dropdown {
+        display: block;
+        width: 100%;
+    }
+
+    .dropdown-content {
+        display: block !important;
+        position: static !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        text-align: center;
+        margin-top: 0 !important;
+        padding: 0 !important;
+    }
+
+    .dropdown-content a {
+        font-size: 1.2rem !important;
+        padding: 15px 0 !important;
+        margin: 0 !important;
+        width: 100%;
+    }
+
+    .dropdown > a {
+        display: none !important; /* Hide "Guides" link on mobile as the inner items are listed directly */
+    }
 }
 
 /* Touch Feedback */
@@ -766,3 +836,101 @@ h6 {
     width: 100%;
     margin-top: 10px;
 }
+
+/* Page Header & Article Layout for Guides */
+.page-header {
+    padding: 180px 0 80px;
+    background: linear-gradient(rgba(13, 17, 23, 0.85), rgba(13, 17, 23, 0.98)), url('assets/hero_bg.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.page-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.page-header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.article-container {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+.article-content h2 {
+    font-size: 2rem;
+    margin: 40px 0 20px;
+    color: #fff;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.article-content h3 {
+    font-size: 1.35rem;
+    margin: 30px 0 15px;
+    color: var(--accent);
+    font-family: var(--font-heading);
+}
+
+.article-content p {
+    font-size: 1.05rem;
+    margin-bottom: 20px;
+    color: #cbd5e1;
+    line-height: 1.8;
+}
+
+.article-content ul, .article-content ol {
+    margin-bottom: 25px;
+    padding-left: 20px;
+}
+
+.article-content li {
+    margin-bottom: 12px;
+    color: #cbd5e1;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.article-content strong {
+    color: #fff;
+}
+
+.article-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 30px;
+    margin: 35px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.article-card h3 {
+    margin-top: 0;
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        padding: 140px 0 60px;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .article-content h2 {
+        font-size: 1.6rem;
+    }
+}
