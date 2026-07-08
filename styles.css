@@ -921,6 +921,17 @@ h6 {
     margin-top: 0;
 }
 
+.article-lead {
+    font-size: 1.15rem;
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--accent);
+    margin: 20px 0 25px 0;
+    border-left: 3px solid var(--accent);
+    padding-left: 15px;
+    font-style: italic;
+}
+
 @media (max-width: 768px) {
     .page-header {
         padding: 140px 0 60px;
