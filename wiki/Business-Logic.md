@@ -8,7 +8,7 @@ We offer specialized batches to cater to various demographic needs:
 - **General Batches (Morning & Evening)**
   - Morning: 6:00 AM – 11:00 AM
   - Evening: 7:00 PM – 10:00 PM
-- **Women’s Special Batch**
+- **Women’s Special Batch (Discontinued)**
   - Days: Monday, Wednesday, Friday
   - Timing: Evening at 6:15 PM & 7:30 PM
   - Focus: Safe & comfortable environment, fat loss & toning.
